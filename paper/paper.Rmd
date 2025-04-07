@@ -1,0 +1,14 @@
+---
+title: "Analysis of How Do Temperature, Sugar Type, and Stirring Affect Sugar Dissolution Time"
+author: "Sakura Hu"
+output:
+  pdf_document: default
+  html_document: default
+number-sections: true
+thanks: "Code and data are available at: [https://github.com/xycww/sta305_sugar](https://github.com/xycww/sta305_sugar)."
+---
+# Description of the design
+
+# Analysis of the data
+
+# Conclusions
