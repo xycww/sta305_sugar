@@ -8,6 +8,21 @@ number-sections: true
 thanks: "Code and data are available at: [https://github.com/xycww/sta305_sugar](https://github.com/xycww/sta305_sugar)."
 ---
 # Description of the design
+This experiment investigates how three factors—water temperature, sugar type, and stirring—affect the dissolution time of granulated sugar. A replicated 2^3 full factorial design was used, involving three factors at two levels each, resulting in eight treatment combinations. Each combination was replicated three times, yielding a total of 24 trials. This design was chosen because it offers a comprehensive yet manageable framework to examine both main effects and interaction effects, while enabling replication to estimate experimental variability.
+
+The selected factors represent distinct mechanisms influencing solubility. 
+
+- **Water Temperature**: cold tap water vs. hot water at 70°C. This variable is chosen since it affects molecular motion and reaction rates (thermal effects). 
+
+- **Sugar Type**: White granulated sugar vs. brown granulated sugar. This variable is chosen since it influences dissolution via chemical composition and crystal structure.
+
+- **Stirring**: No stirring vs. stirring at a consistent speed (approximately two full rotations per second using a spoon). This variable is chosen since it could accelerate solute dispersion.
+
+To conduct the experiment, 150 mL of water was measured into a clear container for each trial, with temperature conditions prepared using either cold tap water or freshly boiled water cooled briefly. One teaspoon (5 mL) of the designated sugar type was added, and a stopwatch was started simultaneously. For stirring conditions, the solution was stirred by hand in a consistent circular motion; otherwise, no external movement was applied. Timing stopped once all visible granules were dissolved, and the result was recorded in seconds. Trials were performed in randomized order to mitigate systematic bias.
+
+This setup was selected due to its feasibility under individual constraints: it requires no specialized equipment or human participants, yet still allows for full experimental control. Each factor is clearly defined, discretely manipulable, and easily repeated, and the response variable—**time to full dissolution**—is straightforward to quantify.
+
+Beyond practicality, the experiment serves as a model for broader physical processes, particularly in contexts such as food preparation, beverage formulation, and industrial solubility studies. The factorial design allows not only for the assessment of individual effects (e.g., temperature alone) but also complex interactions—such as whether the effect of stirring depends on temperature, or whether brown sugar dissolves disproportionately slower in cold water without agitation. Identifying such interactions is often more informative than studying single factors in isolation, and the results of this design may provide insight into how simple environmental variables combine to influence a commonly encountered chemical process.
 
 # Analysis of the data
 
