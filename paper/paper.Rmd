@@ -92,7 +92,7 @@ summary(model_coded)
 
 The model was fitted to obtain the estimated coefficients and corresponding p-values. The factorial effects for each factor and interaction are estimated by calculating $2\hat{\beta}_j$, reflecting the difference between high and low levels of each factor.
 
-Given $m = 3$ replicates and $k = 3$ factors, and with the pooled estimate of variance $\hat{\sigma}^2 = 13.293$, the variance of each factorial effect was computed as:
+Given $m = 3$ replicates and $k = 3$ factors, and with the pooled estimate of residual variance $\hat{\sigma}^2 = 65.12^2 = 4240.06$, the variance of each factorial effect was computed as:
 \[
 \text{Var(effect)} = \frac{4 \hat{\sigma}^2}{m \cdot 2^k} = \text{706.77}
 \]
