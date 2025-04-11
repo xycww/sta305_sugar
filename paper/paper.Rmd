@@ -2,11 +2,15 @@
 title: "Analysis of How Do Temperature, Sugar Type, and Stirring Affect Sugar Dissolution Time"
 author: "Sakura Hu"
 output:
-  pdf_document: default
-  html_document: default
-number-sections: true
+  pdf_document:
+    number_sections: true
+    fig_caption: true
+  html_document:
+    number_sections: true
+    fig_caption: true
 thanks: "Code and data are available at: [https://github.com/xycww/sta305_sugar](https://github.com/xycww/sta305_sugar)."
 ---
+
 # Description of the design
 This experiment investigates how three factors—water temperature, sugar type, and stirring—affect the dissolution time of granulated sugar. A replicated 2^3 full factorial design was used, involving three factors at two levels each, resulting in eight treatment combinations. Each combination was replicated three times, yielding a total of 24 trials. This design was chosen because it offers a comprehensive yet manageable framework to examine both main effects and interaction effects, while enabling replication to estimate experimental variability.
 
@@ -18,7 +22,7 @@ The selected factors represent distinct mechanisms influencing solubility.
 
 - **Stirring**: No stirring vs. stirring at a consistent speed (approximately two full rotations per second using a spoon). This variable is chosen since it could accelerate solute dispersion.
 
-To conduct the experiment, 450 mL of water was measured into a clear container for each trial, with temperature conditions prepared using either cold tap water or freshly boiled water cooled briefly. One teaspoon (5 mL) of the designated sugar type was added, and a stopwatch was started simultaneously. For stirring conditions, the solution was stirred by hand in a consistent circular motion; otherwise, no external movement was applied. Timing stopped once all visible granules were dissolved, and the result was recorded in seconds. Trials were performed in randomized order to mitigate systematic bias.
+To conduct the experiment, 450 mL of water was measured into a clear container for each trial, with temperature conditions prepared using either cold tap water or freshly boiled water cooled briefly. One teaspoon of the designated sugar type was added, and a stopwatch was started simultaneously. For stirring conditions, the solution was stirred by hand in a consistent circular motion; otherwise, no external movement was applied. Timing stopped once all visible granules were dissolved, and the result was recorded in seconds. Trials were performed in randomized order to mitigate systematic bias.
 
 This setup was selected due to its feasibility under individual constraints: it requires no specialized equipment or human participants, yet still allows for full experimental control. Each factor is clearly defined, discretely manipulable, and easily repeated, and the response variable—**time to full dissolution**—is straightforward to quantify.
 
@@ -39,6 +43,32 @@ data <- read.csv("../data/sugar.csv")
 head(data)
 ```
 
+A full factorial $2^3$ design was implemented with three replicates per treatment combination, yielding 24 observations. The response variable, dissolution time (in seconds), was measured across combinations of three binary factors: Temperature (Cold vs. Hot), Sugar Type (White vs. Brown), and Stirring (No vs. Yes). Factor levels were coded as follows to simplify the construction and interpretation of the linear model:
+
+\begin{itemize}
+  \item \textbf{Temperature}: $-1$ for cold water, $+1$ for hot water.
+  \item \textbf{Sugar Type}: $-1$ for brown sugar, $+1$ for white sugar.
+  \item \textbf{Stirring}: $-1$ for no stirring, $+1$ for stirring.
+\end{itemize}
+
+The factorial structure of the experiment enables estimation of all main effects, two-way interactions, and the three-way interaction, as well as an estimate of experimental error.
+
+## Model
+The response was modeled using the standard linear model for a $2^3$ factorial design:
+
+\[
+y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_1 x_2 + \beta_5 x_1 x_3 + \beta_6 x_2 x_3 + \beta_7 x_1 x_2 x_3 + \varepsilon_i,
+\]
+
+where:
+\begin{itemize}
+  \item $x_1$, $x_2$, and $x_3$ represent coded levels of Temperature, Sugar Type, and Stirring, respectively,
+  \item $\beta_0$ is the overall mean response,
+  \item $\beta_1$, $\beta_2$, $\beta_3$ are the main effects of Temperature, Sugar Type, and Stirring,
+  \item $\beta_4$, $\beta_5$, $\beta_6$ represent two-way interactions (e.g., Temperature $\times$ Sugar),
+  \item $\beta_7$ represents the three-way interaction between all factors,
+  \item $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$ represents random errors assumed to follow a normal distribution with mean 0 and variance $\sigma^2$.
+\end{itemize}
 
 ```{r, include=FALSE}
 data$x1 <- ifelse(data$Temp == "hot", 1, -1)
@@ -56,7 +86,19 @@ summary(model_coded)
 
 ```
 
+## Main Effects, Interactions, and Significance
 
+The model was fitted to obtain the estimated coefficients and corresponding p-values. The factorial effects for each factor and interaction are estimated by calculating $2\hat{\beta}_j$, reflecting the difference between high and low levels of each factor.
+
+Given $m = 3$ replicates and $k = 3$ factors, and with the pooled estimate of variance $\hat{\sigma}^2 = 13.293$, the variance of each factorial effect was computed as:
+\[
+\text{Var(effect)} = \frac{4 \hat{\sigma}^2}{m \cdot 2^k} = \text{706.77}.
+\]
+The 95%confidence interval of each effect is calculated as 
+\[
+2\hat{\beta}_j \pm t_{0.975, 16} \cdot \sqrt{\text{Var(effect)}}.
+\]
+An effect was considered statistically significant if its p-value was below 0.05. The results are summarized in Table 1.
 
 ```{r}
 #| warning: false
@@ -71,8 +113,8 @@ effect_estimates <- 2 * beta_hat
 # Estimated variance of effects
 m <- 3
 k <- 3
-sigma2 <- summary(model_coded)$sigma^2
-var_effect <- (4 * sigma2) / (m * 2^k)
+sigma2 <- summary(model_coded)$sigma ^ 2
+var_effect <- (4 * sigma2) / (m * 2 ^ k)
 se_effect <- sqrt(var_effect)
 
 # Degrees of freedom for error
@@ -87,13 +129,15 @@ upper <- effect_estimates + t_crit * se_effect
 
 # Final table
 effects_table <- data.frame(
-  Effect = c("Temperature (x1)", 
-             "Sugar Type (x2)", 
-             "Stirring (x3)",
-             "Temp × Sugar (x4)", 
-             "Temp × Stirring (x5)", 
-             "Sugar × Stirring (x6)", 
-             "Temp × Sugar × Stirring (x7)"),
+  Effect = c(
+    "Temperature",
+    "Sugar Type",
+    "Stirring",
+    "Temperature × Sugar",
+    "Temperature × Stirring",
+    "Temperature × Stirring",
+    "Temperature × Sugar × Stirring"
+  ),
   Estimate = round(effect_estimates, 2),
   Var = round(var_effect, 2),
   CI_Lower = round(lower, 2),
@@ -101,18 +145,27 @@ effects_table <- data.frame(
   p_value = signif(estimates[c("x1", "x2", "x3", "x4", "x5", "x6", "x7"), "Pr(>|t|)"], 3)
 )
 
-
 # Display
-knitr::kable(effects_table, caption = "Main Effects and Interactions with Estimated Variance and 95% Confidence Intervals")
+knitr::kable(effects_table, caption = "Estimated main and interaction effects from the 2^3 factorial design, including variance, 95% confidence intervals, and p-values. Stirring and Temperature had the strongest effects on sugar dissolution time, while Sugar Type showed no statistically significant influence.")
 
 ```
+
+The most influential factor was Stirring, with an estimated effect of $-804.27$ seconds. This indicates that manually stirring the solution drastically reduces the time required for sugar to dissolve. Temperature also had a substantial impact: with an effect of $-440.13$ seconds, hot water significantly accelerates dissolution compared to cold water. These large negative values confirm the intuitive physical expectations regarding agitation and thermal energy.
+
+Sugar Type, on the other hand, was not statistically significant ($p = 0.783$). Its estimated effect was small and the 95% confidence interval included zero. This suggests that, in the context of this experiment, the difference in crystal structure and composition between white and brown sugar does not significantly affect dissolution time.
+
+The interaction between Temperature and Stirring was statistically significant ($p < 0.05$). The estimated ineraction effect is 377.04, indicates that the effectiveness of stirring varies depending on water temperature. In particular, stirring has a much larger effect in cold water, where the natural dissolution process is slower. 
+
+Other interaction terms, including Temperature × Sugar and Sugar × Stirring, were not significant. Their effects were small, and confidence intervals contained zero, and have p_value greater than 0.05, indicating no strong evidence of combined effects. The three-way interaction was also non-significant ($p = 0.374$), suggesting that the combined influence of all three factors does not go beyond the observed two-way interactions.
+
+
+## Interaction Plots
+To support these statistical findings, three interaction plots were generated to visualize the mean dissolution time for each two-factor combination.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-#| label: fig-interact
-#| fig-cap: 'Interaction plots for the three two-way interactions in the \(2^3\) factorial experiment. Each panel shows how the mean dissolution time (in seconds) varies with two interacting factors. In the first plot (Temp × Sugar), the effect of temperature on dissolution time appears similar across sugar types. In the second plot (Temp × Stirring), the effect of stirring is much stronger under cold conditions, indicating a meaningful interaction. In the third plot (Sugar × Stirring), the lines are nearly parallel, suggesting minimal interaction between sugar type and stirring.'
 #| fig.width: 12
 #| fig.height: 3
 
@@ -166,5 +219,19 @@ interaction.plot(
 )
 
 ```
+\begin{center}
+\textbf{Figure 1.} Interaction plots to visualize main effects and interactions. The Temp × Stirring plot shows clearly diverging lines, indicating that stirring has a much larger effect under cold conditions. The Sugar × Stirring plot shows near-parallel lines, suggesting no significant interaction between Sugar Type and Stirring. The Temp × Sugar plot shows a slight crossing of lines, indicating a weak interaction but not statistically significant.
+\end{center}
+
+The Temp × Stirring plot shows clearly diverging lines, confirming that stirring is far more effective under cold conditions. The Sugar × Stirring plot displays near-parallel lines, consistent with the lack of statistical interaction. The Temp × Sugar plot shows slight crossing, suggesting a possible interaction trend, but this is not supported by the statistical analysis.
 
 # Conclusions
+
+This experiment provides clear evidence on how water temperature, sugar type, and stirring influence the dissolution time of granulated sugar. Among the three factors, stirring emerged as the most impactful, significantly reducing the time required for sugar to dissolve. The effect of temperature was also substantial, with hot water consistently accelerating dissolution. In contrast, the effect of sugar type (white vs. brown) was relatively minor when compared to the other two, though some small differences were observed.
+
+Crucially, the experiment revealed a statistically significant interaction between temperature and stirring, indicating that the effectiveness of stirring is not uniform across all thermal conditions. Stirring had a much more pronounced impact in cold water, where molecular motion is otherwise reduced. This aligns well with chemical expectations, as agitation compensates for the lower kinetic energy in cold water. Other interactions, including those involving sugar type, were not statistically significant or only marginally so, suggesting that their combined effects may be less critical in influencing dissolution under the conditions tested.
+
+Taken together, these findings confirm the intuitive expectation that both heat and motion accelerate solubility, and they quantify the relative strength of each factor. Moreover, the factorial design allowed not only for the estimation of each main effect but also for the detection of synergistic effects between variables, such as how stirring and temperature jointly influence dissolution time. This insight would not have been possible through a one-variable-at-a-time approach.
+
+Overall, the results demonstrate that even with basic materials and limited resources, a carefully designed factorial experiment can yield meaningful and interpretable conclusions. The methodological rigor of the design—balanced treatment combinations, replication, randomization—ensures that the observed effects are attributable to the experimental factors rather than external noise. While the experiment was small in scale, it reflects core principles of experimental design and provides a clear example of how interaction effects can reveal deeper insights into physical processes.
+
